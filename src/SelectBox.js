@@ -1,8 +1,16 @@
 angular.module('$selectBox', []).directive('selectBox', function () {
     return {
         restrict: 'E',
-        require: ['ngModel', 'ngData', 'ngSelectedId', 'ngSelectedValue', '?ngTitle', 'ngiItemName', 'ngItemId'],
+        require: [],
         template: '<input id="showed" type="text" ng-click="showSelectModal()" style="cursor:inherit;" readonly />' + '<span id="hidden" type="text" style="display: none;"></span>',
+        scope: {
+            ngSelectedId: "@",
+            ngSelectedValue: "@",
+            ngTitle: "@",
+            ngItemName: "@",
+            ngItemId: "@",
+            ngData: "@"
+        },
         controller: function ($scope, $element, $attrs, $ionicModal, $parse) {
             $scope.modal = {};
 
@@ -27,11 +35,13 @@ angular.module('$selectBox', []).directive('selectBox', function () {
             });
 
             $scope.clickItem = function (item) {
-                var index = $parse($attrs.ngSelectedId);
-                index.assign($scope.$parent, item[$attrs.ngItemId]);
+                var index = $parse($scope.ngSelectedId);
+                index.assign($scope.$parent.$parent, item[$scope.ngItemId]);
+                index.assign($scope, item[$scope.ngItemId]);
 
-                var value = $parse($attrs.ngSelectedValue);
-                value.assign($scope.$parent, item[$attrs.ngItemName]);
+                var value = $parse($scope.ngSelectedValue);
+                value.assign($scope.$parent.$parent, item[$scope.ngItemName]);
+                value.assign($scope, item[$scope.ngItemName]);
 
                 $scope.closeSelectModal();
             };
